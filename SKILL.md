@@ -20,15 +20,17 @@ description: >
 
 120+ 信源按来源类型分为七类，各有各的价值，不分高低：
 
-| 类型 | 采集方式 | 代表来源 |
-|------|---------|---------|
-| 公司官方 | RSS 脚本 | OpenAI, Anthropic, DeepMind, Meta AI, HuggingFace, Mistral |
-| 行业媒体 | RSS 脚本 | The Verge, TechCrunch, Ars Technica, 机器之心, 量子位, 36氪 |
-| 学术平台 | RSS 脚本 | arXiv cs.AI, arXiv cs.CL, HF Daily Papers |
-| Newsletter | web_search | TLDR AI, The Batch, Import AI, Ben's Bites |
-| 社交媒体 | web_search | @karpathy, @_akhaliq, r/LocalLLaMA, 机器之心公众号 |
-| 政策法规 | web_search | NIST AI, Stanford HAI, 中国信通院 |
-| 开发者社区 | HN 脚本 + web_search | Hacker News, GitHub Trending, Product Hunt |
+| 类型 | 采集方式 | RSS 可用 | 需 web_search |
+|------|---------|---------|--------------|
+| 公司官方 | RSS + web_search | OpenAI, DeepMind, Google AI, Meta Engineering, Microsoft AI, NVIDIA, HuggingFace | Anthropic, Mistral, DeepSeek, Qwen 等中国公司 |
+| 行业媒体 | RSS + web_search | The Verge, TechCrunch, Ars Technica, MIT Tech Review, VentureBeat, 量子位 | 机器之心, 36氪, 新智元, 虎嗅 |
+| 学术平台 | RSS + web_search | arXiv cs.AI, arXiv cs.CL, arXiv cs.LG | HF Daily Papers, Papers With Code |
+| Newsletter | web_search | — | TLDR AI, The Batch, Import AI, Ben's Bites |
+| 社交媒体 | web_search | — | @karpathy, @_akhaliq, r/LocalLLaMA, 微信公众号 |
+| 政策法规 | web_search | — | NIST AI, Stanford HAI, 中国信通院 |
+| 开发者社区 | HN 脚本 + web_search | Hacker News (API) | GitHub Trending, Product Hunt |
+
+**重要**：执行 `--list-websearch` 可以获取所有需要 web_search 的源及其推荐搜索关键词。
 
 完整的信源注册表在 `references/sources_registry.md`。
 
@@ -104,14 +106,15 @@ python3 scripts/fetch_rss.py --type official,media --limit 5 --since 48h
 ### fetch_hackernews.py — Hacker News 采集
 
 ```bash
-# 采集 AI 相关热帖（默认）
+# 默认模式：从 HN 首页过滤 AI 相关热帖（推荐）
 python3 scripts/fetch_hackernews.py
 
-# 自定义关键词和数量
-python3 scripts/fetch_hackernews.py --query "LLM OR transformer" --limit 20
+# 搜索模式：按关键词搜索
+python3 scripts/fetch_hackernews.py --mode search --query "LLM OR transformer" --limit 20
 ```
 
-输出格式为 stdout JSON 数组，每个元素包含 title, url, score, comments_count, time 字段。
+默认 front_page 模式会获取 HN 当前首页热帖并自动过滤 AI 相关内容，结果质量和时效性最好。
+如果首页没有 AI 话题，会自动降级到关键词搜索。
 
 ### web_search 补充采集
 
